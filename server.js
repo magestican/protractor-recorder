@@ -17,8 +17,7 @@ gulp.task('express', function() {
     confFile = exportsDirectory + '/conf.js',
     rooms = [];
 
-
-  var registerExpressPaths = function(){
+  var registerExpressPaths = function() {
     app.use(function(req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -26,12 +25,8 @@ gulp.task('express', function() {
     });
 
     app.use(bodyParser.json()); // support json encoded bodies
-    app.use(bodyParser.urlencoded({
-      extended: true
-    }));
-    app.use(require('connect-livereload')({
-      port: 35729
-    }));
+    app.use(bodyParser.urlencoded({extended: true}));
+    app.use(require('connect-livereload')({port: 35729}));
     app.use(express.static(__dirname));
 
     app.get('/app', function(req, res) {
@@ -66,9 +61,11 @@ gulp.task('express', function() {
         var stdout = stdout.split('\n');
 
         if (command === 'status') {
-          var drivers = [{
-            driver: 'firefox'
-          }];
+          var drivers = [
+            {
+              driver: 'firefox'
+            }
+          ];
 
           stdout.forEach(function(driver) {
             //console.log(driver);
@@ -76,7 +73,8 @@ gulp.task('express', function() {
               drivers.push({
                 driver: driver.match(/(\w+)/)[0]
               });
-          });
+            }
+          );
 
           response = drivers;
         }
@@ -116,9 +114,7 @@ gulp.task('express', function() {
       if (conf.jasmine)
         confOutput += "  framework: 'jasmine2',\r\n";
 
-      confOutput += "  seleniumAddress: '" + conf.seleniumAddress + "',\r\n" +
-        "  baseUrl: '" + baseUrl + "',\r\n" +
-        "  specs: ['spec.js'],\r\n";
+      confOutput += "  seleniumAddress: '" + conf.seleniumAddress + "',\r\n" + "  baseUrl: '" + baseUrl + "',\r\n" + "  specs: ['spec.js'],\r\n";
 
       if (conf.capabilities.length == 1) {
 
@@ -157,10 +153,7 @@ gulp.task('express', function() {
       }
 
       if (conf.login)
-        confOutput += "    return browser.driver.wait(function() {\r\n" +
-        "      return browser.driver.getCurrentUrl().then(function(url) {\r\n" +
-        "        return url != '" + baseUrl + "';});\r\n" +
-        "    }, 10000, 'Error');\r\n";
+        confOutput += "    return browser.driver.wait(function() {\r\n" + "      return browser.driver.getCurrentUrl().then(function(url) {\r\n" + "        return url != '" + baseUrl + "';});\r\n" + "    }, 10000, 'Error');\r\n";
 
       confOutput += "  }\r\n}";
 
@@ -189,7 +182,8 @@ gulp.task('express', function() {
                 output += '    ' + line + '\r\n    ';
               else
                 output += line + '\r\n    ';
-            } else {
+              }
+            else {
               output += line;
             }
 
@@ -232,7 +226,7 @@ gulp.task('express', function() {
     });
   }
 
-  var setIoHandlers = function(){
+  var setIoHandlers = function() {
     io.on('connection', function(socket) {
 
       console.log(socket.id);
@@ -244,7 +238,10 @@ gulp.task('express', function() {
         console.log('joinroom: ' + room);
         socket.join(room);
 
-        rooms.push({id: room, sockets: [socket.id]});
+        rooms.push({
+          id: room,
+          sockets: [socket.id]
+        });
 
         io.to(room).emit('joined_channel', room);
 
@@ -318,9 +315,9 @@ gulp.task('express', function() {
         console.log('user disconnected');
         console.log(socket.id);
 
-        rooms.forEach(function(room){
+        rooms.forEach(function(room) {
           console.log(room.id);
-          if(room.sockets.indexOf(socket.id) != -1) {
+          if (room.sockets.indexOf(socket.id) != -1) {
             io.to(room.id).emit('session-disconnect', 'session');
           }
         });
@@ -335,18 +332,25 @@ gulp.task('express', function() {
     });
   }
 
-  pem.createCertificate({days:1, selfSigned:true}, function(err, keys){
-    var httpsExpressServer = https.createServer({key: keys.serviceKey, cert: keys.certificate}, app)
+  pem.createCertificate({
+    days: 1,
+    selfSigned: true
+  }, function(err, keys) {
+    if (err) {
+      return console.error(err);
+    }
+    var httpsExpressServer = https.createServer({
+      key: keys.serviceKey,
+      cert: keys.certificate
+    }, app)
     io = notInitializedIo(httpsExpressServer);
-    httpsExpressServer.listen(port,function(){
+    httpsExpressServer.listen(port, function() {
       console.log('Server listening on *:' + port);
       console.log('SocketIo Listening')
       setIoHandlers();
       registerExpressPaths();
     });
 
-
   });
-
 
 });
