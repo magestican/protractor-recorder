@@ -59,6 +59,9 @@ $ npm install
 $ bower install
 ```
 
+## Installing openssl is required to run the server over https and test https websites:
+https://wiki.openssl.org/index.php/Binaries
+
 ## Running Protractor Recorder
 
 Now you will need run two different process, following the order:
@@ -85,3 +88,12 @@ $ gulp
 - Enter a url base and click on 'Record' to start recording
 - After end up your test flow on Selenium browser's session, click on 'Export' to export conf.js and spec.js inside folder public/exports.
 - Click on 'Run' to see your test running with a new Selenium session.
+
+
+# Possible issues running webdriver-manager on versions of Chrome 58+ (connection errors) are fixed by forcing webdriver to update :
+
+- This will force download webdriver 2.29 :
+webdriver-manager update --versions.chrome 2.29
+
+- This will force webdriver-manager to use 2.29 :
+webdriver-manager start --versions.chrome 2.29
