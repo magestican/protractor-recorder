@@ -337,7 +337,8 @@ gulp.task('express', function() {
     selfSigned: true
   }, function(err, keys) {
     if (err) {
-      return console.error(err);
+      console.error(err);
+      return;
     }
     var httpsExpressServer = https.createServer({
       key: keys.serviceKey,
